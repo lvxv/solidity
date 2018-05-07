@@ -465,7 +465,7 @@ string AddressType::richIdentifier() const
 		return "t_address";
 }
 
-bool AddressType::isImplicitlyConvertibleTo(Type const& _other) const
+BoolResult AddressType::isImplicitlyConvertibleTo(Type const& _other) const
 {
 	if (_other.category() != category())
 		return false;
@@ -474,7 +474,7 @@ bool AddressType::isImplicitlyConvertibleTo(Type const& _other) const
 	return other.m_stateMutability <= m_stateMutability;
 }
 
-bool AddressType::isExplicitlyConvertibleTo(Type const& _convertTo) const
+BoolResult AddressType::isExplicitlyConvertibleTo(Type const& _convertTo) const
 {
 	if (auto const* contractType = dynamic_cast<ContractType const*>(&_convertTo))
 		return (m_stateMutability >= StateMutability::Payable) || !contractType->isPayable();
@@ -503,13 +503,13 @@ u256 AddressType::literalValue(Literal const* _literal) const
 	return u256(_literal->valueWithoutUnderscores());
 }
 
-TypePointer AddressType::unaryOperatorResult(Token _operator) const
+TypeResult AddressType::unaryOperatorResult(Token _operator) const
 {
 	return _operator == Token::Delete ? make_shared<TupleType>() : TypePointer();
 }
 
 
-TypePointer AddressType::binaryOperatorResult(Token _operator, TypePointer const& _other) const
+TypeResult AddressType::binaryOperatorResult(Token _operator, TypePointer const& _other) const
 {
 	// Addresses can only be compared.
 	if (!TokenTraits::isCompareOp(_operator))
@@ -575,7 +575,7 @@ string IntegerType::richIdentifier() const
 	return "t_" + string(isSigned() ? "" : "u") + "int" + to_string(numBits());
 }
 
-bool IntegerType::isImplicitlyConvertibleTo(Type const& _convertTo) const
+BoolResult IntegerType::isImplicitlyConvertibleTo(Type const& _convertTo) const
 {
 	if (_convertTo.category() == category())
 	{
@@ -596,7 +596,7 @@ bool IntegerType::isImplicitlyConvertibleTo(Type const& _convertTo) const
 		return false;
 }
 
-bool IntegerType::isExplicitlyConvertibleTo(Type const& _convertTo) const
+BoolResult IntegerType::isExplicitlyConvertibleTo(Type const& _convertTo) const
 {
 	return _convertTo.category() == category() ||
 		_convertTo.category() == Category::Address ||
@@ -606,18 +606,18 @@ bool IntegerType::isExplicitlyConvertibleTo(Type const& _convertTo) const
 		_convertTo.category() == Category::FixedPoint;
 }
 
-TypePointer IntegerType::unaryOperatorResult(Token _operator) const
+TypeResult IntegerType::unaryOperatorResult(Token _operator) const
 {
 	// "delete" is ok for all integer types
 	if (_operator == Token::Delete)
-		return make_shared<TupleType>();
+		return TypeResult::Ok(make_shared<TupleType>());
 	// we allow +, -, ++ and --
 	else if (_operator == Token::Add || _operator == Token::Sub ||
 			_operator == Token::Inc || _operator == Token::Dec ||
 			_operator == Token::BitNot)
-		return shared_from_this();
+		return TypeResult::Ok(shared_from_this());
 	else
-		return TypePointer();
+		return TypeResult::Err();
 }
 
 bool IntegerType::operator==(Type const& _other) const
@@ -650,7 +650,7 @@ bigint IntegerType::maxValue() const
 		return (bigint(1) << m_bits) - 1;
 }
 
-TypePointer IntegerType::binaryOperatorResult(Token _operator, TypePointer const& _other) const
+TypeResult IntegerType::binaryOperatorResult(Token _operator, TypePointer const& _other) const
 {
 	if (
 		_other->category() != Category::RationalNumber &&
@@ -703,7 +703,7 @@ string FixedPointType::richIdentifier() const
 	return "t_" + string(isSigned() ? "" : "u") + "fixed" + to_string(m_totalBits) + "x" + to_string(m_fractionalDigits);
 }
 
-bool FixedPointType::isImplicitlyConvertibleTo(Type const& _convertTo) const
+BoolResult FixedPointType::isImplicitlyConvertibleTo(Type const& _convertTo) const
 {
 	if (_convertTo.category() == category())
 	{
@@ -716,18 +716,18 @@ bool FixedPointType::isImplicitlyConvertibleTo(Type const& _convertTo) const
 	return false;
 }
 
-bool FixedPointType::isExplicitlyConvertibleTo(Type const& _convertTo) const
+BoolResult FixedPointType::isExplicitlyConvertibleTo(Type const& _convertTo) const
 {
 	return _convertTo.category() == category() || _convertTo.category() == Category::Integer;
 }
 
-TypePointer FixedPointType::unaryOperatorResult(Token _operator) const
+TypeResult FixedPointType::unaryOperatorResult(Token _operator) const
 {
 	switch(_operator)
 	{
 	case Token::Delete:
 		// "delete" is ok for all fixed types
-		return make_shared<TupleType>();
+		return TypeResult(make_shared<TupleType>());
 	case Token::Add:
 	case Token::Sub:
 	case Token::Inc:
@@ -770,7 +770,7 @@ bigint FixedPointType::minIntegerValue() const
 		return bigint(0);
 }
 
-TypePointer FixedPointType::binaryOperatorResult(Token _operator, TypePointer const& _other) const
+TypeResult FixedPointType::binaryOperatorResult(Token _operator, TypePointer const& _other) const
 {
 	auto commonType = Type::commonType(shared_from_this(), _other);
 
@@ -956,7 +956,7 @@ tuple<bool, rational> RationalNumberType::isValidLiteral(Literal const& _literal
 	return make_tuple(true, value);
 }
 
-bool RationalNumberType::isImplicitlyConvertibleTo(Type const& _convertTo) const
+BoolResult RationalNumberType::isImplicitlyConvertibleTo(Type const& _convertTo) const
 {
 	switch (_convertTo.category())
 	{
@@ -994,7 +994,7 @@ bool RationalNumberType::isImplicitlyConvertibleTo(Type const& _convertTo) const
 	}
 }
 
-bool RationalNumberType::isExplicitlyConvertibleTo(Type const& _convertTo) const
+BoolResult RationalNumberType::isExplicitlyConvertibleTo(Type const& _convertTo) const
 {
 	if (isImplicitlyConvertibleTo(_convertTo))
 		return true;
@@ -1007,7 +1007,7 @@ bool RationalNumberType::isExplicitlyConvertibleTo(Type const& _convertTo) const
 		return false;
 }
 
-TypePointer RationalNumberType::unaryOperatorResult(Token _operator) const
+TypeResult RationalNumberType::unaryOperatorResult(Token _operator) const
 {
 	rational value;
 	switch (_operator)
@@ -1028,10 +1028,10 @@ TypePointer RationalNumberType::unaryOperatorResult(Token _operator) const
 	default:
 		return TypePointer();
 	}
-	return make_shared<RationalNumberType>(value);
+	return TypeResult(make_shared<RationalNumberType>(value));
 }
 
-TypePointer RationalNumberType::binaryOperatorResult(Token _operator, TypePointer const& _other) const
+TypeResult RationalNumberType::binaryOperatorResult(Token _operator, TypePointer const& _other) const
 {
 	if (_other->category() == Category::Integer || _other->category() == Category::FixedPoint)
 	{
@@ -1213,7 +1213,7 @@ TypePointer RationalNumberType::binaryOperatorResult(Token _operator, TypePointe
 		if (value.numerator() != 0 && max(mostSignificantBit(abs(value.numerator())), mostSignificantBit(abs(value.denominator()))) > 4096)
 			return TypePointer();
 
-		return make_shared<RationalNumberType>(value);
+		return TypeResult(make_shared<RationalNumberType>(value));
 	}
 }
 
@@ -1353,7 +1353,7 @@ StringLiteralType::StringLiteralType(Literal const& _literal):
 {
 }
 
-bool StringLiteralType::isImplicitlyConvertibleTo(Type const& _convertTo) const
+BoolResult StringLiteralType::isImplicitlyConvertibleTo(Type const& _convertTo) const
 {
 	if (auto fixedBytes = dynamic_cast<FixedBytesType const*>(&_convertTo))
 		return size_t(fixedBytes->numBytes()) >= m_value.size();
@@ -1408,7 +1408,7 @@ FixedBytesType::FixedBytesType(unsigned _bytes): m_bytes(_bytes)
 	);
 }
 
-bool FixedBytesType::isImplicitlyConvertibleTo(Type const& _convertTo) const
+BoolResult FixedBytesType::isImplicitlyConvertibleTo(Type const& _convertTo) const
 {
 	if (_convertTo.category() != category())
 		return false;
@@ -1416,7 +1416,7 @@ bool FixedBytesType::isImplicitlyConvertibleTo(Type const& _convertTo) const
 	return convertTo.m_bytes >= m_bytes;
 }
 
-bool FixedBytesType::isExplicitlyConvertibleTo(Type const& _convertTo) const
+BoolResult FixedBytesType::isExplicitlyConvertibleTo(Type const& _convertTo) const
 {
 	return (_convertTo.category() == Category::Integer && numBytes() * 8 == dynamic_cast<IntegerType const&>(_convertTo).numBits()) ||
 		(_convertTo.category() == Category::Address && numBytes() == 20) ||
@@ -1424,18 +1424,18 @@ bool FixedBytesType::isExplicitlyConvertibleTo(Type const& _convertTo) const
 		_convertTo.category() == category();
 }
 
-TypePointer FixedBytesType::unaryOperatorResult(Token _operator) const
+TypeResult FixedBytesType::unaryOperatorResult(Token _operator) const
 {
 	// "delete" and "~" is okay for FixedBytesType
 	if (_operator == Token::Delete)
-		return make_shared<TupleType>();
+		return TypeResult(make_shared<TupleType>());
 	else if (_operator == Token::BitNot)
 		return shared_from_this();
 
 	return TypePointer();
 }
 
-TypePointer FixedBytesType::binaryOperatorResult(Token _operator, TypePointer const& _other) const
+TypeResult FixedBytesType::binaryOperatorResult(Token _operator, TypePointer const& _other) const
 {
 	if (TokenTraits::isShiftOp(_operator))
 	{
@@ -1451,7 +1451,7 @@ TypePointer FixedBytesType::binaryOperatorResult(Token _operator, TypePointer co
 
 	// FixedBytes can be compared and have bitwise operators applied to them
 	if (TokenTraits::isCompareOp(_operator) || TokenTraits::isBitOp(_operator))
-		return commonType;
+		return TypeResult(commonType);
 
 	return TypePointer();
 }
@@ -1485,14 +1485,14 @@ u256 BoolType::literalValue(Literal const* _literal) const
 		solAssert(false, "Bool type constructed from non-boolean literal.");
 }
 
-TypePointer BoolType::unaryOperatorResult(Token _operator) const
+TypeResult BoolType::unaryOperatorResult(Token _operator) const
 {
 	if (_operator == Token::Delete)
-		return make_shared<TupleType>();
+		return TypeResult(make_shared<TupleType>());
 	return (_operator == Token::Not) ? shared_from_this() : TypePointer();
 }
 
-TypePointer BoolType::binaryOperatorResult(Token _operator, TypePointer const& _other) const
+TypeResult BoolType::binaryOperatorResult(Token _operator, TypePointer const& _other) const
 {
 	if (category() != _other->category())
 		return TypePointer();
@@ -1502,7 +1502,7 @@ TypePointer BoolType::binaryOperatorResult(Token _operator, TypePointer const& _
 		return TypePointer();
 }
 
-bool ContractType::isImplicitlyConvertibleTo(Type const& _convertTo) const
+BoolResult ContractType::isImplicitlyConvertibleTo(Type const& _convertTo) const
 {
 	if (*this == _convertTo)
 		return true;
@@ -1519,7 +1519,7 @@ bool ContractType::isImplicitlyConvertibleTo(Type const& _convertTo) const
 	return false;
 }
 
-bool ContractType::isExplicitlyConvertibleTo(Type const& _convertTo) const
+BoolResult ContractType::isExplicitlyConvertibleTo(Type const& _convertTo) const
 {
 	if (auto const* addressType = dynamic_cast<AddressType const*>(&_convertTo))
 		return isPayable() || (addressType->stateMutability() < StateMutability::Payable);
@@ -1532,14 +1532,14 @@ bool ContractType::isPayable() const
 	return fallbackFunction && fallbackFunction->isPayable();
 }
 
-TypePointer ContractType::unaryOperatorResult(Token _operator) const
+TypeResult ContractType::unaryOperatorResult(Token _operator) const
 {
 	if (isSuper())
 		return TypePointer{};
 	return _operator == Token::Delete ? make_shared<TupleType>() : TypePointer();
 }
 
-TypePointer ReferenceType::unaryOperatorResult(Token _operator) const
+TypeResult ReferenceType::unaryOperatorResult(Token _operator) const
 {
 	if (_operator != Token::Delete)
 		return TypePointer();
@@ -1550,7 +1550,7 @@ TypePointer ReferenceType::unaryOperatorResult(Token _operator) const
 	case DataLocation::CallData:
 		return TypePointer();
 	case DataLocation::Memory:
-		return make_shared<TupleType>();
+		return TypeResult(make_shared<TupleType>());
 	case DataLocation::Storage:
 		return m_isPointer ? TypePointer() : make_shared<TupleType>();
 	}
@@ -1604,7 +1604,7 @@ string ReferenceType::identifierLocationSuffix() const
 	return id;
 }
 
-bool ArrayType::isImplicitlyConvertibleTo(const Type& _convertTo) const
+BoolResult ArrayType::isImplicitlyConvertibleTo(const Type& _convertTo) const
 {
 	if (_convertTo.category() != category())
 		return false;
@@ -1644,7 +1644,7 @@ bool ArrayType::isImplicitlyConvertibleTo(const Type& _convertTo) const
 	}
 }
 
-bool ArrayType::isExplicitlyConvertibleTo(const Type& _convertTo) const
+BoolResult ArrayType::isExplicitlyConvertibleTo(const Type& _convertTo) const
 {
 	if (isImplicitlyConvertibleTo(_convertTo))
 		return true;
@@ -2004,7 +2004,7 @@ vector<tuple<VariableDeclaration const*, u256, unsigned>> ContractType::stateVar
 	return variablesAndOffsets;
 }
 
-bool StructType::isImplicitlyConvertibleTo(const Type& _convertTo) const
+BoolResult StructType::isImplicitlyConvertibleTo(const Type& _convertTo) const
 {
 	if (_convertTo.category() != category())
 		return false;
@@ -2241,7 +2241,7 @@ bool StructType::recursive() const
 	return *m_recursive;
 }
 
-TypePointer EnumType::unaryOperatorResult(Token _operator) const
+TypeResult EnumType::unaryOperatorResult(Token _operator) const
 {
 	return _operator == Token::Delete ? make_shared<TupleType>() : TypePointer();
 }
@@ -2283,7 +2283,7 @@ size_t EnumType::numberOfMembers() const
 	return m_enum.members().size();
 };
 
-bool EnumType::isExplicitlyConvertibleTo(Type const& _convertTo) const
+BoolResult EnumType::isExplicitlyConvertibleTo(Type const& _convertTo) const
 {
 	return _convertTo == *this || _convertTo.category() == Category::Integer;
 }
@@ -2300,7 +2300,7 @@ unsigned EnumType::memberValue(ASTString const& _member) const
 	solAssert(false, "Requested unknown enum value " + _member);
 }
 
-bool TupleType::isImplicitlyConvertibleTo(Type const& _other) const
+BoolResult TupleType::isImplicitlyConvertibleTo(Type const& _other) const
 {
 	if (auto tupleType = dynamic_cast<TupleType const*>(&_other))
 	{
@@ -2640,14 +2640,14 @@ bool FunctionType::operator==(Type const& _other) const
 	return true;
 }
 
-bool FunctionType::isExplicitlyConvertibleTo(Type const& _convertTo) const
+BoolResult FunctionType::isExplicitlyConvertibleTo(Type const& _convertTo) const
 {
 	if (m_kind == Kind::External && _convertTo == AddressType::address())
 		return true;
 	return _convertTo.category() == category();
 }
 
-bool FunctionType::isImplicitlyConvertibleTo(Type const& _convertTo) const
+BoolResult FunctionType::isImplicitlyConvertibleTo(Type const& _convertTo) const
 {
 	if (_convertTo.category() != category())
 		return false;
@@ -2672,14 +2672,14 @@ bool FunctionType::isImplicitlyConvertibleTo(Type const& _convertTo) const
 	return true;
 }
 
-TypePointer FunctionType::unaryOperatorResult(Token _operator) const
+TypeResult FunctionType::unaryOperatorResult(Token _operator) const
 {
 	if (_operator == Token::Delete)
-		return make_shared<TupleType>();
+		return TypeResult(make_shared<TupleType>());
 	return TypePointer();
 }
 
-TypePointer FunctionType::binaryOperatorResult(Token _operator, TypePointer const& _other) const
+TypeResult FunctionType::binaryOperatorResult(Token _operator, TypePointer const& _other) const
 {
 	if (_other->category() != category() || !(_operator == Token::Equal || _operator == Token::NotEqual))
 		return TypePointer();
