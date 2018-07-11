@@ -14,7 +14,7 @@ Compiler Features:
 Bugfixes:
 
 Build System:
- * Emscripten: Upgrade to Emscripten SDK 1.37.21 and boost 1.67.
+ * Emscripten: Upgrade to Emscripten SDK 1.38.8 and boost 1.67.
 
 
 
