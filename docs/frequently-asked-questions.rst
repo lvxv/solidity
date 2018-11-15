@@ -38,24 +38,6 @@ has it (which includes `Remix <https://remix.ethereum.org/>`_), then
 ``contractname.kill.sendTransaction({from:eth.coinbase})``, just the same as my
 examples.
 
-Is it possible to in-line initialize an array like so: ``string[] myarray = ["a", "b"];``
-=========================================================================================
-
-Yes. However it should be noted that this currently only works with statically sized memory arrays. You can even create an inline memory
-array in the return statement.
-
-Example::
-
-    pragma solidity >=0.4.16 <0.6.0;
-
-    contract C {
-        function f() public pure returns (uint8[5] memory) {
-            string[4] memory adaArr = ["This", "is", "an", "array"];
-            adaArr[0] = "That";
-            return [1, 2, 3, 4, 5];
-        }
-    }
-
 If I return an ``enum``, I only get integer values in web3.js. How to get the named values?
 ===========================================================================================
 

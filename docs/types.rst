@@ -460,10 +460,16 @@ a non-rational number).
 .. index:: literal, literal;string, string
 .. _string_literals:
 
-String Literals
----------------
+String Literals and Types
+-------------------------
 
 String literals are written with either double or single-quotes (``"foo"`` or ``'bar'``).  They do not imply trailing zeroes as in C; ``"foo"`` represents three bytes, not four.  As with integer literals, their type can vary, but they are implicitly convertible to ``bytes1``, ..., ``bytes32``, if they fit, to ``bytes`` and to ``string``.
+
+For example, with ``"stringliteral"`` the string literal is interpreted in its raw byte form and with certain tools, if you inspect it, you see a 32-byte hex value, which is the ``"stringliteral"`` in hex.
+
+A string literal becomes a ``string`` type when you assign it to a variable, for example::
+
+  bytes32 samevar = "stringliteral";
 
 String literals support the following escape characters:
 
@@ -857,10 +863,10 @@ or create a new memory array and copy every element.
         }
     }
 
-.. index:: ! array;literals, !inline;arrays
+.. index:: ! array;literals
 
-Array Literals / Inline Arrays
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Array Literals
+^^^^^^^^^^^^^^
 
 Array literals are arrays that are written as an expression and are not
 assigned to a variable right away.
@@ -901,6 +907,23 @@ possible:
 
 It is planned to remove this restriction in the future but currently creates
 some complications because of how arrays are passed in the ABI.
+
+.. index:: !inline;arrays
+
+Inline Arrays
+^^^^^^^^^^^^^
+
+You can initialise a statically sized memory array inline using syntax such as ``string[] memory myarray = new string[](4);``. For example::
+
+     pragma solidity >=0.4.0 <0.6.0;
+     contract C {
+        function f() public pure returns (uint8[5] memory) {
+            string[4] memory adaArr = ["This", "is", "an", "array"];
+            return [1, 2, 3, 4, 5];
+        }
+    }
+
+You can create and initialise multi-dimensional arrays in the same way, but filling arrays can cost a lot of gas, so make sure you optimise how you use them.
 
 .. index:: ! array;length, length, push, pop, !array;push, !array;pop
 
