@@ -51,6 +51,7 @@ smt::SortPointer dev::solidity::smtSort(Type const& _type)
 			solAssert(mapType, "");
 			return make_shared<smt::ArraySort>(smtSort(*mapType->keyType()), smtSort(*mapType->valueType()));
 		}
+		solAssert(false, "Invalid type");
 	}
 	}
 	solAssert(false, "Invalid type");
