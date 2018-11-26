@@ -465,9 +465,7 @@ String Literals and Types
 
 String literals are written with either double or single-quotes (``"foo"`` or ``'bar'``).  They do not imply trailing zeroes as in C; ``"foo"`` represents three bytes, not four.  As with integer literals, their type can vary, but they are implicitly convertible to ``bytes1``, ..., ``bytes32``, if they fit, to ``bytes`` and to ``string``.
 
-A string literal becomes a ``string`` type when you assign it to a variable, for example::
-
-  bytes32 samevar = "stringliteral";
+For example, with ``bytes32 samevar = "stringliteral"`` the string literal is interpreted in its raw byte form when assigned to a ``bytes32`` type.
 
 String literals support the following escape characters:
 
@@ -866,7 +864,7 @@ or create a new memory array and copy every element.
 Array Literals
 ^^^^^^^^^^^^^^
 
-Array literals (or inline arrays) are arrays that are written as an expression and are not
+Array literals (also called inline arrays) are arrays that are written as an expression and are not
 assigned to a variable right away.
 
 You create a statically sized memory array literal using syntax such as
