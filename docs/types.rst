@@ -870,23 +870,10 @@ assigned to a variable right away.
 You create a statically sized memory array literal using syntax such as
 ``string[] memory myarray = new string[](4);``.
 
-For example::
-
-  pragma solidity >=0.4.0 <0.6.0;
-
-  contract C {
-     function f() public pure returns (uint8[5] memory) {
-         string[4] memory adaArr = ["This", "is", "an", "array"];
-         return [1, 2, 3, 4, 5];
-     }
-  }
-
-You create multi-dimensional arrays in the same way, but filling arrays can
-cost a lot of gas, so make sure you optimise how you use them.
-
 The type of an array literal is a memory array of fixed size whose base
 type is the common type of the given elements. For example, the type of ``[1, 2, 3]`` is
-``uint8[3] memory``, because the type of each of these constants is ``uint8``. Because of this, it is necessary to convert the first element to ``uint``.
+``uint8[3] memory``, because the type of each of these constants is ``uint8``,
+it is necessary to convert the first element to ``uint``.
 
 ::
 
