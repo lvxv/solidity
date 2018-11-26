@@ -156,7 +156,7 @@ public:
 	static Expression select(Expression _array, Expression _index)
 	{
 		solAssert(_array.sort->kind == Kind::Array, "");
-		auto const& arraySort = dynamic_cast<ArraySort const*>(_array.sort.get());
+		std::shared_ptr<ArraySort> arraySort = std::dynamic_pointer_cast<ArraySort>(_array.sort);
 		solAssert(arraySort, "");
 		solAssert(_index.sort, "");
 		solAssert(*arraySort->domain == *_index.sort, "");
@@ -172,7 +172,7 @@ public:
 	static Expression store(Expression _array, Expression _index, Expression _element)
 	{
 		solAssert(_array.sort->kind == Kind::Array, "");
-		auto const& arraySort = dynamic_cast<ArraySort const*>(_array.sort.get());
+		std::shared_ptr<ArraySort> arraySort = std::dynamic_pointer_cast<ArraySort>(_array.sort);
 		solAssert(arraySort, "");
 		solAssert(_index.sort, "");
 		solAssert(_element.sort, "");
@@ -181,7 +181,7 @@ public:
 		return Expression(
 			"store",
 			std::vector<Expression>{std::move(_array), std::move(_index), std::move(_element)},
-			_array.sort
+			arraySort
 		);
 	}
 
