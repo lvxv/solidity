@@ -114,7 +114,7 @@ Priority: extra
 Maintainer: Christian (Buildserver key) <builds@ethereum.org>
 Build-Depends: ${Z3DEPENDENCY}debhelper (>= 9.0.0),
                cmake,
-               g++-4.8,
+               g++-8,
                git,
                libgmp-dev,
                libboost-all-dev,
