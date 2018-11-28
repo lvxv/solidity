@@ -864,11 +864,21 @@ or create a new memory array and copy every element.
 Array Literals
 ^^^^^^^^^^^^^^
 
-Array literals (also called inline arrays) are arrays that are written as an expression and are not
-assigned to a variable right away.
+Array literals (also called inline arrays) are arrays that are written as an
+expression and are not assigned to a variable right away.
 
-You create a statically sized memory array literal using syntax such as
-``string[] memory myarray = new string[](4);``.
+::
+
+  pragma solidity >=0.4.16 <0.6.0;
+
+  contract C {
+      function f() public pure {
+          g([uint(1), 2, 3]);
+      }
+      function g(uint[3] _data) public pure {
+          // ...
+      }
+  }
 
 The type of an array literal is a memory array of fixed size whose base
 type is the common type of the given elements. For example, the type of ``[1, 2, 3]`` is
