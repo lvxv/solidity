@@ -872,18 +872,13 @@ expression and are not assigned to a variable right away.
   pragma solidity >=0.4.16 <0.6.0;
 
   contract C {
-      function f() public pure {
-          g([uint(1), 2, 3]);
-      }
-      function g(uint[3] _data) public pure {
-          // ...
-      }
+    function f() public pure {
+      uint[] memory a;
+    }     
   }
 
-The type of an array literal is a memory array of fixed size whose base
-type is the common type of the given elements. For example, the type of ``[1, 2, 3]`` is
-``uint8[3] memory``, because the type of each of these constants is ``uint8``,
-it is necessary to convert the first element to ``uint``.
+In the example below, the type of ``[1, 2, 3]`` is
+``uint8[3] memory``. Because the type of each of these constants is ``uint8``, if you want the result to be a ``uint[3] memory`` type, you need to convert the first element to ``uint``.
 
 ::
 
