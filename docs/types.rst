@@ -864,18 +864,8 @@ or create a new memory array and copy every element.
 Array Literals
 ^^^^^^^^^^^^^^
 
-Array literals (also called inline arrays) are arrays that are written as an
-expression and are not assigned to a variable right away.
-
-::
-
-  pragma solidity >=0.4.16 <0.6.0;
-
-  contract C {
-    function f() public pure {
-      uint[] memory a;
-    }     
-  }
+An array literal is a list of zero or more array elements, enclosed in square
+brackets ([]). For example ``uint[] memory a = [1, 2, 3]``.
 
 In the example below, the type of ``[1, 2, 3]`` is
 ``uint8[3] memory``. Because the type of each of these constants is ``uint8``, if you want the result to be a ``uint[3] memory`` type, you need to convert the first element to ``uint``.
@@ -908,8 +898,8 @@ Fixed size memory arrays cannot be assigned to dynamically-sized memory arrays, 
         }
     }
 
-It is planned to remove this restriction in the future but currently creates
-some complications because of how arrays are passed in the ABI.
+It is planned to remove this restriction in the future but creates some
+complications because of how arrays are passed in the ABI.
 
 .. index:: ! array;length, length, push, pop, !array;push, !array;pop
 
