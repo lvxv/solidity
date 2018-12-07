@@ -2002,6 +2002,11 @@ void TypeChecker::typeCheckFunctionGeneralChecks(
 				" This function requires a single bytes argument."
 				" Use abi.encodePacked(...) to obtain the pre-0.5.0"
 				" behaviour or abi.encode(...) to use ABI encoding.";
+		else if (_functionType->kind() == FunctionType::Kind::SYSTEM)
+			msg +=
+				" This function requires two bytes argument."
+				" Use abi.encodePacked(...) to obtain the pre-0.5.0"
+				" behaviour or abi.encode(...) to use ABI encoding.";
 		m_errorReporter.typeError(_functionCall.location(), msg);
 		return;
 	}
@@ -2107,6 +2112,11 @@ void TypeChecker::typeCheckFunctionGeneralChecks(
 			)
 				msg +=
 					" This function requires a single bytes argument."
+					" Use abi.encodePacked(...) to obtain the pre-0.5.0"
+					" behaviour or abi.encode(...) to use ABI encoding.";
+			else if (_functionType->kind() == FunctionType::Kind::SYSTEM)
+				msg +=
+					" This function requires two bytes argument."
 					" Use abi.encodePacked(...) to obtain the pre-0.5.0"
 					" behaviour or abi.encode(...) to use ABI encoding.";
 			m_errorReporter.typeError(paramArgMap[i]->location(), msg);

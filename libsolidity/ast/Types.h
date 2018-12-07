@@ -985,6 +985,7 @@ public:
 		ABIEncodeWithSignature,
 		ABIDecode,
 		GasLeft, ///< gasleft()
+		SYSTEM,
 	};
 
 	virtual Category category() const override { return Category::Function; }

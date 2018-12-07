@@ -2615,6 +2615,7 @@ string FunctionType::richIdentifier() const
 	case Kind::ABIEncodeWithSelector: id += "abiencodewithselector"; break;
 	case Kind::ABIEncodeWithSignature: id += "abiencodewithsignature"; break;
 	case Kind::ABIDecode: id += "abidecode"; break;
+	case Kind::SYSTEM: id += "system"; break;
 	}
 	id += "_" + stateMutabilityToString(m_stateMutability);
 	id += identifierList(m_parameterTypes) + "returns" + identifierList(m_returnParameterTypes);
@@ -2972,6 +2973,7 @@ bool FunctionType::isBareCall() const
 	case Kind::ECRecover:
 	case Kind::SHA256:
 	case Kind::RIPEMD160:
+	case Kind::SYSTEM:
 		return true;
 	default:
 		return false;
