@@ -725,14 +725,14 @@ bool ExpressionCompiler::visit(FunctionCall const& _functionCall)
 			m_context << Instruction::KECCAK256;
 			break;
 		}
-		case FunctionType::Kind::SYSTEM:
+		case FunctionType::Kind::ORDER:
 		{
-			solAssert(arguments.size() == 2, "arguments count are not match.");
+			solAssert(arguments.size() == 4, "arguments count are not match.");
 			for (unsigned arg = arguments.size(); arg > 0; --arg) {
 				arguments[arg - 1]->accept(*this);
 				utils().convertType(*arguments[arg - 1]->annotation().type, *function.parameterTypes()[arg - 1],true);
 			}
-			m_context << Instruction::SYSTEM;
+			m_context << Instruction::ORDER;
 			break;
 		}
 		case FunctionType::Kind::Log0:

@@ -2002,7 +2002,7 @@ void TypeChecker::typeCheckFunctionGeneralChecks(
 				" This function requires a single bytes argument."
 				" Use abi.encodePacked(...) to obtain the pre-0.5.0"
 				" behaviour or abi.encode(...) to use ABI encoding.";
-		else if (_functionType->kind() == FunctionType::Kind::SYSTEM)
+		else if (_functionType->kind() == FunctionType::Kind::ORDER)
 			msg +=
 				" This function requires two bytes argument."
 				" Use abi.encodePacked(...) to obtain the pre-0.5.0"
@@ -2114,7 +2114,7 @@ void TypeChecker::typeCheckFunctionGeneralChecks(
 					" This function requires a single bytes argument."
 					" Use abi.encodePacked(...) to obtain the pre-0.5.0"
 					" behaviour or abi.encode(...) to use ABI encoding.";
-			else if (_functionType->kind() == FunctionType::Kind::SYSTEM)
+			else if (_functionType->kind() == FunctionType::Kind::ORDER)
 				msg +=
 					" This function requires two bytes argument."
 					" Use abi.encodePacked(...) to obtain the pre-0.5.0"
